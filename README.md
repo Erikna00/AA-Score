@@ -1,14 +1,29 @@
 # AA-Score
 The protein-ligand scoring function plays an important role in computer-aided drug discovery, which is heavily used in virtual screening and lead optimization. In this study, we developed a new empirical protein-ligand scoring function, which is a linear combination of empirical energy components, including hydrogen bond, van der Waals, electrostatic, hydrophobic, π-stacking, π-cation, and metal-ligand interaction. Different from previous empirical scoring functions, AA-Score uses several amino acid-specific empirical interaction components. We tested AA-Score on several test sets. The resulting performance shows AA-Score performs well on scoring, docking, and ranking compared with other widely used traditional scoring functions. Our results suggest that AA-Score gains substantial improvements from using detailed protein-ligand interaction components.
 
+#Pip Install
+This package was updated by Erik Sundén to be installable via pip.
+Clone the git repo then run
+
+conda create -n aascore
+conda env update -n aascore --file environment.yaml
+
+to create enviroment and install dependencies.
+
+cd to the AA_Score directory and run 
+
+pip install .
+
+to finally install AAScore into your conda enviroment.
+
 ## Requirements
 
-* Python 3.6
-* Openbabel >= 3.0
-* RDKit >= 2019 (http://www.rdkit.org/docs/Install.html)
-* numpy 1.18.1
+* Python
+* Openbabel
+* RDKit
+* numpy
 * scipy
-* pandas 0.25.3
+* pandas
 * py3dmol
 * schrodinger (optional)
 * biopandas

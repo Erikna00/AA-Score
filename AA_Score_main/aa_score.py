@@ -1,16 +1,17 @@
-from interaction_components.plinteraction import get_interactions
+from AA_Score_main.interaction_components.plinteraction import get_interactions
 import numpy as np
 
 from rdkit import Chem
 from rdkit.Chem import AllChem
 
-from utils.hbonds import calc_hbond_strength
-from utils.hydrophobic import calc_hydrophobic
-from utils.vdw import calc_vdw
-from utils.electrostatic import Electrostatic
+from AA_Score_main.utils.hbonds import calc_hbond_strength
+from AA_Score_main.utils.hydrophobic import calc_hydrophobic
+from AA_Score_main.utils.vdw import calc_vdw
+from AA_Score_main.utils.electrostatic import Electrostatic
 import os
 import sys
 import argparse
+import pkg_resources
 
 residue_names = [
     "HIS",
@@ -210,7 +211,8 @@ class Model:
 
 
 def load_model():
-    param = np.load("models/model-final.npy")
+    model_path = pkg_resources.resource_filename("AA_Score_main", "models/model-final.npy")
+    param = np.load(model_path, allow_pickle=True)
     clf = Model(param)
     return clf
 
