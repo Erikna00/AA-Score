@@ -30,12 +30,10 @@ def clean_protein(pdb_filepath, pdb_id, verbose=False):
 def clean_ligand(lig_pdb_path):
     mol = Chem.MolFromPDBFile(lig_pdb_path, removeHs=False, sanitize=False)
     if mol is None:
-        raise ValueError(f"RDKit failed to parse ligand PDB: {lig_pdb_path}")
+        raise ValueError(f'RDKit failed to parse ligand PDB: {lig_pdb_path}')
     mol.UpdatePropertyCache(strict=False)
     Chem.SanitizeMol(mol)
     mol = Chem.AddHs(mol)
-    AllChem.EmbedMolecule(mol, AllChem.ETKDG())
-    AllChem.UFFOptimizeMolecule(mol)
     rdmolfiles.MolToPDBFile(mol, lig_pdb_path)
 
 
