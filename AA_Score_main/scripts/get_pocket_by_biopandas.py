@@ -81,7 +81,7 @@ class GetPocket:
 
         ppdb.df['ATOM'] = pro_cut
         newmolname = str(randint(1,1000000)).zfill(10)
-        name = 'pocket_{}_{}.pdb'.format(pdb_id, newmolname)
+        name = 'pocket_{}_{}.pdb'.format(self.pdb_id, newmolname)
 
         ppdb.to_pdb(path=name, records=['ATOM'])
         pmol = Chem.MolFromPDBFile(name, removeHs=False) 
