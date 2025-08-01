@@ -49,13 +49,25 @@ def get_min_dist(am, ligu):
 class GetPocket:
     def __init__(self, ligand_file, protein_file, pdb_id):
         """
-        ligand_file: format mol
+        ligand_file: format mol, mol2, or pdb
         protein_file: format pdb
         """
         self.ligand_file = ligand_file
         self.protein_file = protein_file
         self.pdb_id =  pdb_id
-        self.ligand_mol = Chem.MolFromMolFile(ligand_file, removeHs=False)
+        
+        lig_file_ext = os.path.splitext(ligand_file)[1].lower()
+        if lig_file_ext == '.mol':
+            self.ligand_mol = Chem.MolFromMolFile(ligand_file, removeHs=False)
+        elif lig_file_ext == '.mol2':
+            self.ligand_mol = Chem.MolFromMol2File(ligand_file, removeHs=False)
+        elif lig_file_ext == '.pdb':
+            self.ligand_mol = Chem.MolFromPDBFile(ligand_file, removeHs=False)
+        else:
+            raise ValueError(f'Unsupported ligand file format for {ligand_file}.\nSupports .mol, .mol2, and .pdb ligand inputs.')
+        if self.ligand_mol is None:
+            raise ValueError(f'Failed to parse ligand from file {ligand_file}')
+        
         self.pocket_mol,  self.temp_file = self.process_pro_and_lig()
         self.pocket_path = os.path.basename(protein_file).split(".")[0] + "_pocket.pdb"
         Chem.MolToPDBFile(self.pocket_mol, self.pocket_path)
@@ -69,7 +81,7 @@ class GetPocket:
 
         ppdb.df['ATOM'] = pro_cut
         newmolname = str(randint(1,1000000)).zfill(10)
-        name = 'pocket_{}_{}.pdb'.format(pdb_id, newmolname)
+        name = 'pocket_{}_{}.pdb'.format(self.pdb_id, newmolname)
 
         ppdb.to_pdb(path=name, records=['ATOM'])
         pmol = Chem.MolFromPDBFile(name, removeHs=False) 
