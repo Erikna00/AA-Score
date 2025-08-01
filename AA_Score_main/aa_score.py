@@ -298,7 +298,10 @@ def calc_single(mol_prot, mol_lig, output_file, clf, pdb_id):
     except KeyError:
         # Fallback to pdb id if ligand name not stored as mol property
         print(f'[Warning] Could not get name of ligand from {pdb_id}')
-        name = pdb_id
+        if pdb_id is not None:
+            name = pdb_id
+        else:
+            raise NameError(f'[Error] No pdb_id was passed to calc_single() and GetProp("_Name") failed for ligand.')
     score = calc_score(mol_lig, mol_prot, clf)
 
     if output_file:
