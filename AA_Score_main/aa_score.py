@@ -290,21 +290,15 @@ def calc_batch(mol_prot, mol_ligs, output_file, clf):
             print( name, score )
     return
 
-def calc_single(mol_prot, mol_lig, output_file, clf):
-    name = mol_lig.GetProp("_Name")
-    score = calc_score(mol_lig, mol_prot, clf)
-
-    if output_file:
-        with open(output_file, "a") as f:
-            f.write(name + "\t" + str(score) + "\n")
-    else:
-        print( name, score )
-    return
-
-def calc_single(mol_prot, mol_lig, output_file, clf):
+def calc_single(mol_prot, mol_lig, output_file, clf, pdb_id):
     if not mol_lig:
         raise RuntimeError("RDKit parse the file error")
-    name = mol_lig.GetProp("_Name")
+    try:
+        name = mol_lig.GetProp("_Name")
+    except KeyError:
+        # Fallback to pdb id if ligand name not stored as mol property
+        print(f'[Warning] Could not get name of ligand from {pdb_id}')
+        name = pdb_id
     score = calc_score(mol_lig, mol_prot, clf)
 
     if output_file:
@@ -331,10 +325,12 @@ def func():
     parser.add_argument('--Rec', type=str, help='the file of binding pocket, only support PDB format')
     parser.add_argument('--Lig', type=str, help='the file of ligands, support mol2, mol, sdf, PDB')
     parser.add_argument('--Out', type=str, help='the output file for recording scores', default=None)
+    parser.add_argument('--ID', type=str, help='custom pose/pdb id', default=None)
     args = parser.parse_args()
     protein_file = args.Rec
     ligand_file = args.Lig
     output_file = args.Out
+    pdb_id = args.ID
     
     clf = load_model()
     mol_prot = Chem.MolFromPDBFile(protein_file, removeHs=False)
@@ -347,13 +343,13 @@ def func():
         calc_batch(mol_prot, mol_ligs, output_file, clf)
     elif lig_format == "mol2":
         mol_lig = Chem.MolFromMol2File(ligand_file, removeHs=False)
-        calc_single(mol_prot, mol_lig, output_file, clf)
+        calc_single(mol_prot, mol_lig, output_file, clf, pdb_id)
     elif lig_format == "mol":
         mol_lig = Chem.MolFromMolFile(ligand_file, removeHs=False)
-        calc_single(mol_prot, mol_lig, output_file, clf)
+        calc_single(mol_prot, mol_lig, output_file, clf, pdb_id)
     elif lig_format == "pdb":
         mol_lig = Chem.MolFromPDBFile(ligand_file, removeHs=False)
-        calc_single(mol_prot, mol_lig, output_file, clf)
+        calc_single(mol_prot, mol_lig, output_file, clf, pdb_id)
     return
 
 if __name__ == "__main__":
